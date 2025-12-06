@@ -1,5 +1,7 @@
 import pygame
 from entities import PhysicsEntity
+from utils import load_image, load_images
+from tilemap import Tilemap
 
 
 
@@ -8,58 +10,52 @@ class Game:
     def __init__(self):
         pygame.init()
 
-        self.window_width = 640
-        self.window_height = 480
+        self.window_width = 960
+        self.window_height = 720
 
         self.WINDOW = pygame.display.set_mode(
             [self.window_width, self.window_height]
         )
-        pygame.display.set_caption('NinjAx')
+
+        self.display = pygame.Surface([320, 240])
+
+
+
 
         self.running = True
         self.FPS = 60
         self.clock = pygame.time.Clock()
 
         self.assets = {
-            'player': pygame.image.load('bin/images/entities/player.png')
+            'player': load_image('entities/player.png'),
+            'grass': load_images('tiles/grass'),
+            'stone': load_images('tiles/stone'),
+
         }
 
+        print(self.assets['grass'])
+
         self.player = PhysicsEntity(self, 'player', [50, 50], [8, 15])
-
-
-        self.img = pygame.image.load('bin/images/clouds/cloud_1.png')
-        self.img.set_colorkey([0, 0, 0])
-        self.img_pos = [345, 200]
         self.movement = [False, False]
 
-        self.collision_area = pygame.Rect(160, 100, 200, 25)
+        self.tilemap = Tilemap(self)
+
 
     def run(self):
         while self.running:
 
-            self.WINDOW.fill([183, 229, 247])
+            self.display.fill([183, 229, 247])
+
+            self.tilemap.render(self.display)
 
             self.player.update([self.movement[1] - self.movement[0], 0])
-            self.player.render(self.WINDOW)
+            self.player.render(self.display)
 
 
-            cloud_rect = pygame.Rect(self.img_pos[0], self.img_pos[1], self.img.get_width(), self.img.get_height())
-
-            if cloud_rect.colliderect(self.collision_area):
-                pygame.draw.rect(self.WINDOW, [237, 237, 37], self.collision_area)
-            else:
-                pygame.draw.rect(self.WINDOW, [37, 37, 37], self.collision_area)
-
-
-            #pygame.draw.rect(self.WINDOW, [237, 37, 237], cloud_rect)
+            
 
 
 
-            self.WINDOW.blit(self.img, self.img_pos)
-
-
-            #self.img_pos[1] += self.movement[1] - self.movement[0]
-            self.img_pos[1] +=  (self.movement[1] - self.movement[0])
 
 
 
@@ -70,10 +66,10 @@ class Game:
 
                 if event.type == pygame.KEYDOWN:
 
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_LEFT:
                         self.movement[0] = True
 
-                    if event.key == pygame.K_DOWN:
+                    if event.key == pygame.K_RIGHT:
                         self.movement[1] = True
 
                     if event.key == pygame.K_ESCAPE:
@@ -82,19 +78,23 @@ class Game:
 
                 if event.type == pygame.KEYUP:
 
-                    if event.key == pygame.K_UP:
+                    if event.key == pygame.K_LEFT:
                         self.movement[0] = False
 
-                    if event.key == pygame.K_DOWN:
+                    if event.key == pygame.K_RIGHT:
                         self.movement[1] = False
 
+            scaled_display = pygame.transform.scale(self.display, self.WINDOW.get_size())
+            self.WINDOW.blit(scaled_display, [0, 0])
+            pygame.display.set_caption(f'NinjAx [FPS: {self.clock.get_fps():.0f}]')
             pygame.display.update()
             self.clock.tick(self.FPS)
 
-game = Game()
+if __name__ == '__main__':
+    game = Game()
 
-game.run()
-pygame.quit()
+    game.run()
+    pygame.quit()
 
 
 

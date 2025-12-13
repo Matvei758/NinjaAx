@@ -17,7 +17,7 @@ class PhysicsEntity:
             movement[1] + self.velocity[1],
         ]
 
-        self.velocity[1] = self.velocity[1] + 0.01
+        self.velocity[1] = self.velocity[1] + 0.001
 
         self.pos[0] += frame_movement[0]
         self.pos[1] += frame_movement[1]

@@ -48,7 +48,13 @@ class Game:
 
             self.tilemap.render(self.display)
 
-            self.player.update([self.movement[1] - self.movement[0], 0])
+            tiles_around = self.tilemap.physics_rect_around(self.player.pos)
+            
+
+            for rect in tiles_around:
+                pygame.draw.rect(self.display, [255, 0, 0], rect)
+
+            self.player.update(self.tilemap, [self.movement[1] - self.movement[0], 0])
             self.player.render(self.display)
 
 

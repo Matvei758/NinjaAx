@@ -40,22 +40,23 @@ class Game:
 
         self.tilemap = Tilemap(self)
 
+        #camera
+        self.camera_scroll = [0, 0]
+        
+
 
     def run(self):
         while self.running:
 
             self.display.fill([183, 229, 247])
 
-            self.tilemap.render(self.display)
+            self.camera_scroll[0] += (self.player.rect().centerx - self.display.get_width() / 2 - self.camera_scroll[0]) / 25 
+            self.camera_scroll[1] += (self.player.rect().centery - self.display.get_height() / 2 - self.camera_scroll[1]) / 25
+            self.tilemap.render(self.display, self.camera_scroll)
 
-            tiles_around = self.tilemap.physics_rect_around(self.player.pos)
-            
-
-            for rect in tiles_around:
-                pygame.draw.rect(self.display, [255, 0, 0], rect)
 
             self.player.update(self.tilemap, [self.movement[1] - self.movement[0], 0])
-            self.player.render(self.display)
+            self.player.render(self.display, self.camera_scroll)
 
 
             
@@ -74,9 +75,13 @@ class Game:
 
                     if event.key == pygame.K_LEFT:
                         self.movement[0] = True
+                        
 
                     if event.key == pygame.K_RIGHT:
                         self.movement[1] = True
+                    if event.key == pygame.K_UP:
+                        self.player.velocity[1] = -3
+                    
 
                     if event.key == pygame.K_ESCAPE:
                         self.running = False
@@ -101,6 +106,19 @@ if __name__ == '__main__':
 
     game.run()
     pygame.quit()
+
+
+
+
+
+
+
+
+
+
+
+    
+    
 
 
 

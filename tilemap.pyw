@@ -52,12 +52,12 @@ class Tilemap:
 
 
 
-    def render(self, surf):
+    def render(self, surf, offset):
         for loc in self.tilemap:
             tile = self.tilemap[loc]
             tile_type = self.game.assets[tile['type']]
             tile_variant = tile_type[tile['variant']]
-            tile_pos = [tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size]
+            tile_pos = [tile['pos'][0] * self.tile_size - offset[0], tile['pos'][1] * self.tile_size - offset[1]]
             surf.blit(tile_variant, tile_pos)
 
 

@@ -11,27 +11,42 @@ class PhysicsEntity:
 
         self.velocity = [0, 0]
 
+        self.collisions = {
+            'up': False,
+            'down': False,
+            'right': False,
+            'left': False,
+        }
+
 
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 
     def update(self, tilemap, movement):
+        self.collisions = {
+            'up': False,
+            'down': False,
+            'right': False,
+            'left': False,
+        }
         frame_movement = [
             movement[0] + self.velocity[0],
             movement[1] + self.velocity[1],
         ]
 
-        self.velocity[1] = self.velocity[1] + 0.05
+        self.velocity[1] = min(5, self.velocity[1] + 0.05)
 
-        self.pos[0] += frame_movement[0]
+        self.pos[0] += frame_movement[0] * 2
         entity_rect = self.rect()
-        pygame.draw.rect(self.game.display, [255, 30, 30], entity_rect)
+        #pygame.draw.rect(self.game.display, [255, 30, 30], entity_rect)
 
         for rect in tilemap.physics_rect_around(self.pos):
             if entity_rect.colliderect(rect):
                 if frame_movement[0] > 0:
+                    self.collisions['right'] = True
                     entity_rect.right = rect.left
                 if frame_movement[0] < 0:
+                    self.collisions['left'] = True
                     entity_rect.left = rect.right
 
                 self.pos[0] = entity_rect.x
@@ -40,16 +55,58 @@ class PhysicsEntity:
         self.pos[1] += frame_movement[1]
 
         entity_rect = self.rect()
-        pygame.draw.rect(self.game.display, [255, 30, 30], entity_rect)
+        #pygame.draw.rect(self.game.display, [255, 30, 30], entity_rect)
 
         for rect in tilemap.physics_rect_around(self.pos):
             if entity_rect.colliderect(rect):
                 if frame_movement[1] > 0:
+                    self.collisions['down'] = True
                     entity_rect.bottom = rect.top
                 if frame_movement[1] < 0:
+                    self.collisions['up'] = True
                     entity_rect.top = rect.bottom
 
                 self.pos[1] = entity_rect.y
 
-    def render(self, surf):
-        surf.blit(self.game.assets['player'], self.pos)
+        if self.collisions['down'] or self.collisions['up']:
+            self.velocity[1] = 0
+        
+
+    def render(self, surf, offset):
+        offset_pos = [self.pos[0] - offset[0], self.pos[1] - offset[1]]
+        surf.blit(self.game.assets['player'], offset_pos)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+        
